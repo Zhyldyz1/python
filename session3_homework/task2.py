@@ -3,6 +3,8 @@
 # Output:
 # Reversed Word: nohtyP
 # Take input from the user
-word = input("Please write your word: ")
-reversed_word = word[::-1]
+word = input("Enter a word: ")
+reversed_word = ""
+for char in word:
+    reversed_word = char + reversed_word 
 print("Reversed Word:", reversed_word)
