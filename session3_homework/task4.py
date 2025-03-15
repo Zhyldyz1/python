@@ -18,7 +18,3 @@
 #         break  
 #     else:
 #         print("Wrong password. Please try again.")
-tpl = (1, 2, True, 10.10, "Hello", 1)
-print(tpl)
-print(type(tpl))
-print(tpl[-2])

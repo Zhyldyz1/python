@@ -50,16 +50,18 @@
 # tpl = [i for i in range(1, 10)]
 # print(tpl)
 
-jan_class = {
-    "beka": "prius",
-    "iana": "cake",
-    "erkin": "coffee",
-    "kostya": "massage",
-    "aibek": "english teacher",
-    "aigerim": "ten years",
-    "cuneyt": "homeworks",
-    "jyldyz": "uni student",
-    "gulnaz": "roses"
-}
+# jan_class = {
+#     "beka": "prius",
+#     "iana": "cake",
+#     "erkin": "coffee",
+#     "kostya": "massage",
+#     "aibek": "english teacher",
+#     "aigerim": "ten years",
+#     "cuneyt": "homeworks",
+#     "jyldyz": "uni student",
+#     "gulnaz": "roses"
+# }
 
-print((jan_class.items()))
+# print((jan_class.items()))
+
+
