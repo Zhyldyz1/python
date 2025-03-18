@@ -10,3 +10,4 @@ def my_func(num):
 
 my_func(4)
 my_func(9)
+
