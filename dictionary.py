@@ -135,3 +135,4 @@ The Counter class from the collections module is useful for counting occurrences
 from collections import Counter
 counts = Counter(["a", "b", "a", "c", "b"])
 print(counts)  # Output: Counter({"a": 2, "b": 2, "c": 1})
+
