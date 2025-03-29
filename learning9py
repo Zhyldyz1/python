@@ -1,0 +1,40 @@
+import psutil
+import requests
+import socket
+
+# Slack webhook URL (create it in Slack -> Apps -> Incoming Webhooks)
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/your/webhook/url"
+
+# Thresholds
+CPU_THRESHOLD = 80  # in %
+MEMORY_THRESHOLD = 80  # in %
+
+# Get hostname
+HOSTNAME = socket.gethostname()
+
+def send_slack_alert(message):
+    payload = {
+        "text": f":warning: *Server Alert on {HOSTNAME}*\n{message}"
+    }
+    response = requests.post(SLACK_WEBHOOK_URL, json=payload)
+    return response.status_code == 200
+
+def check_system():
+    cpu = psutil.cpu_percent(interval=2)
+    memory = psutil.virtual_memory().percent
+    alerts = []
+
+    if cpu > CPU_THRESHOLD:
+        alerts.append(f"High CPU usage: {cpu:.2f}%")
+    if memory > MEMORY_THRESHOLD:
+        alerts.append(f"High Memory usage: {memory:.2f}%")
+
+    if alerts:
+        message = "\n".join(alerts)
+        send_slack_alert(message)
+        print("Alert sent.")
+    else:
+        print("System healthy.")
+
+if __name__ == "__main__":
+    check_system()
