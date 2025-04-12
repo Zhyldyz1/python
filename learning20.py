@@ -1,53 +1,32 @@
-import boto3
-from datetime import datetime, timedelta
+import time
 
-# Create AWS clients
-ec2 = boto3.client('ec2')
-cloudwatch = boto3.client('cloudwatch')
+LOG_FILE = 'sample.log'
+ERROR_THRESHOLD = 3  # Alert if this many errors happen
+TIME_WINDOW = 60     # ...within this many seconds
 
-# Get all running EC2 instances
-def get_running_instances():
-    instances = []
-    response = ec2.describe_instances()
-    for reservation in response['Reservations']:
-        for instance in reservation['Instances']:
-            if instance['State']['Name'] == 'running':
-                name = 'Unnamed'
-                if 'Tags' in instance:
-                    for tag in instance['Tags']:
-                        if tag['Key'] == 'Name':
-                            name = tag['Value']
-                instances.append({'InstanceId': instance['InstanceId'], 'Name': name})
-    return instances
+def monitor_log():
+    error_times = []
 
-# Check if instance has low CPU usage
-def is_low_cpu(instance_id):
-    end = datetime.utcnow()
-    start = end - timedelta(hours=6)
+    with open(LOG_FILE, 'r') as f:
+        f.seek(0, 2)  # Move to the end of file
 
-    metrics = cloudwatch.get_metric_statistics(
-        Namespace='AWS/EC2',
-        MetricName='CPUUtilization',
-        Dimensions=[{'Name': 'InstanceId', 'Value': instance_id}],
-        StartTime=start,
-        EndTime=end,
-        Period=3600,
-        Statistics=['Average']
-    )
+        while True:
+            line = f.readline()
+            if not line:
+                time.sleep(0.5)
+                continue
 
-    datapoints = metrics.get('Datapoints', [])
-    if not datapoints:
-        return False
+            if "ERROR" in line:
+                now = time.time()
+                error_times.append(now)
 
-    avg_cpu = sum(point['Average'] for point in datapoints) / len(datapoints)
-    return avg_cpu < 1
+                # Keep only recent errors
+                error_times = [t for t in error_times if now - t <= TIME_WINDOW]
 
-# Main logic
-def main():
-    instances = get_running_instances()
-    for inst in instances:
-        if is_low_cpu(inst['InstanceId']):
-            print(f"Idle instance found: {inst['Name']} ({inst['InstanceId']})")
+                if len(error_times) >= ERROR_THRESHOLD:
+                    print("ALERT: Too many errors in short time!")
+                    error_times.clear()
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    print("Watching log for errors...")
+    monitor_log()
